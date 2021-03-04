@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.generation.blogPessoal.model.UserLogin;
 import org.generation.blogPessoal.model.Usuario;
+import org.generation.blogPessoal.repository.UsuarioRepository;
 import org.generation.blogPessoal.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 	
 	@Autowired
+	private UsuarioRepository repository;
+	
+	@Autowired
 	private UsuarioService usuarioService;
 	
 	@PostMapping("/logar")
@@ -29,7 +33,11 @@ public class UsuarioController {
 	}
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Usuario> Post(@RequestBody Usuario usuario){
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(usuarioService.CadastrarUsuario(usuario));
+		Optional<Usuario> user = usuarioService.CadastrarUsuario(usuario);
+		try {
+			return ResponseEntity.ok(user.get());
+		}catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
 	}
 }
